@@ -1,4 +1,6 @@
-from model import db, User, UserAuth, UserProfile
+import hashlib
+
+from trade.trade.model import db, User, UserAuth, UserProfile
 import uuid
 
 def get_user_by_id(user_id):
@@ -29,3 +31,9 @@ def create_user_auth(user_id, google_id=None, password=None):
     db.session.add(user_auth)
     db.session.commit()
     return user_auth
+
+def auth_user(username, password):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    print(password)
+    return User.query.filter(User.username.__eq__(username.strip()),
+                             User.password.__eq__(password)).first()

@@ -1,9 +1,13 @@
-from trade import app, db
 from flask import request, jsonify
-from flask_login import login_user, logout_user, login_required, current_user
-from trade.dao import auth
-from model import  UserProfile
-from trade.utils import token
+from flask_login import login_user
+
+from trade.trade.model import UserProfile
+from trade.trade import db, app
+from trade.trade.dao import auth
+
+from trade.trade.utils import token
+
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
