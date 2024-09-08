@@ -3,9 +3,10 @@ from urllib import request
 from flask import render_template, redirect, url_for , request
 from flask_login import login_user, login_required, logout_user, current_user
 
-from trade.trade import login
-from trade.trade.model import *
-from trade.trade.dao import auth
+from . import login
+from .model import *
+from .dao import auth
+
 
 
 @login.user_loader

@@ -1,6 +1,6 @@
 import hashlib
 
-from trade.trade.model import db, User, UserAuth, UserProfile
+from ..model import *
 import uuid
 
 def get_user_by_id(user_id):

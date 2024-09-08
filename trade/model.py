@@ -3,7 +3,7 @@ import hashlib
 
 from sqlalchemy import Column, String, Enum, DateTime, ForeignKey, Text, Integer, Boolean
 from sqlalchemy.orm import relationship
-from trade.trade import db, app
+from . import db, app
 from flask_login import UserMixin
 
 
