@@ -1,0 +1,41 @@
+       body {
+        background-image: linear-gradient(to right, #0651a4, #00abec); /* Gradient background */
+        color: #fff; /* White text color */
+        }
+        .card {
+            border: none;
+            border-radius: 8px;
+            background-color: #ffffff; /* White background for the card */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .btn-primary {
+            background-color: #0056b3; /* Button color */
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #003d80; /* Darker button color on hover */
+        }
+        .form-label {
+            color: #333; /* Darker label color for contrast */
+        }
+        .form-control {
+            background-color: #f8f9fa; /* Light background for input fields */
+            color: #333; /* Dark text for better readability */
+            border: 1px solid #ced4da; /* Border color for input fields */
+        }
+        .form-control:focus {
+            border-color: #0066cc; /* Border color on focus */
+            box-shadow: none;
+        }
+        .form-check-label {
+            color: #333; /* Darker text color for checkbox label */
+        }
+        .text-center a {
+            color: #007bff; /* Link color */
+        }
+        .text-center a:hover {
+            color: #0056b3; /* Darker link color on hover */
+        }

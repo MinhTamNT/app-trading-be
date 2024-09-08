@@ -1,0 +1,33 @@
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table thead th {
+    font-weight: bold;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-light {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.logout-link {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 5px;
+    background-color: #dc3545; /* Bootstrap danger color */
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid transparent;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.logout-link:hover {
+    background-color: #c82333; /* Darker red on hover */
+    color: #fff;
+}

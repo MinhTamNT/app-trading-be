@@ -103,6 +103,6 @@ def get_current_user():
     else:
         return jsonify({'message': 'Authorization header is missing or invalid'}), 401
 
-if __name__ == '__main__':
-    with app.app_context():
-        app.run(debug=True)
+# if __name__ == '__main__':
+#     with app.app_context():
+#         app.run(debug=True)

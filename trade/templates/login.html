@@ -6,49 +6,7 @@
     <title>Login Page</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #001c66; /* Dark blue background */
-            color: #fff; /* White text color */
-        }
-        .card {
-            border: none;
-            border-radius: 8px;
-            background-color: #ffffff; /* White background for the card */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
-        }
-        .card-body {
-            padding: 2rem;
-        }
-        .btn-primary {
-            background-color: #0056b3; /* Button color */
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #003d80; /* Darker button color on hover */
-        }
-        .form-label {
-            color: #333; /* Darker label color for contrast */
-        }
-        .form-control {
-            background-color: #f8f9fa; /* Light background for input fields */
-            color: #333; /* Dark text for better readability */
-            border: 1px solid #ced4da; /* Border color for input fields */
-        }
-        .form-control:focus {
-            border-color: #0066cc; /* Border color on focus */
-            box-shadow: none;
-        }
-        .form-check-label {
-            color: #333; /* Darker text color for checkbox label */
-        }
-        .text-center a {
-            color: #007bff; /* Link color */
-        }
-        .text-center a:hover {
-            color: #0056b3; /* Darker link color on hover */
-        }
-    </style>
+    <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet"/>
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
@@ -57,7 +15,8 @@
                 <div class="card">
                     <div class="card-body">
                         <h3 class="text-center mb-4">Login</h3>
-                        <form action="/login" method="POST">
+                        <!-- Login Form -->
+                        <form action="/admin/login" method="POST">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
                                 <input type="text" class="form-control" id="username" name="username" required>
@@ -68,14 +27,38 @@
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Login</button>
                         </form>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap Toast -->
+    {% if message %}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="loginToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive"
+             aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Bootstrap 5 JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toastEl = document.getElementById('loginToast');
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+        });
+    </script>
 </body>
 </html>

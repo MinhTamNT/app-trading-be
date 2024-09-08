@@ -3,11 +3,14 @@ import hashlib
 
 from sqlalchemy import Column, String, Enum, DateTime, ForeignKey, Text, Integer, Boolean
 from sqlalchemy.orm import relationship
-from trade.trade import  db, app
+from trade.trade import db, app
 from flask_login import UserMixin
+
+
 class UserRole(enum.Enum):
     ADMIN = 1
     GUEST = 2
+
 
 class Recommendation(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -18,7 +21,8 @@ class Recommendation(db.Model):
 
     notifications = relationship('Notification', back_populates='recommendation')
 
-class User(db.Model , UserMixin):
+
+class User(db.Model, UserMixin):
     __table_args__ = {'extend_existing': True}
     idUser = Column(String(255), primary_key=True)
     username = Column(String(150), unique=True, nullable=False)
@@ -33,13 +37,15 @@ class User(db.Model , UserMixin):
     notifications = relationship('Notification', back_populates='user')
     credentials = relationship('Credentials', back_populates='user')
 
-    @property
-    def is_active(self):
-        """Flask-Login requires this property to determine if the user is active."""
-        return self.isActive
-
+    # Add the get_id method required by Flask-Login
     def get_id(self):
         return self.idUser
+
+    # Optional: Flask-Login expects this property
+    @property
+    def is_active(self):
+        return self.isActive
+
 
 class Notification(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -53,6 +59,7 @@ class Notification(db.Model):
     recommendation = relationship('Recommendation', back_populates='notifications')
     user = relationship('User', back_populates='notifications')
 
+
 class Credentials(db.Model):
     __table_args__ = {'extend_existing': True}
     idCredentials = Column(String(255), primary_key=True)
@@ -63,6 +70,7 @@ class Credentials(db.Model):
 
     user = relationship('User', back_populates='credentials')
 
+
 class UserAuth(db.Model):
     __table_args__ = {'extend_existing': True}
     idAuth = Column(String(255), primary_key=True)
@@ -72,6 +80,7 @@ class UserAuth(db.Model):
     provider = Column(Enum('starand', 'google'), nullable=False)
 
     user = relationship('User', back_populates='auth')
+
 
 class UserProfile(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -84,6 +93,7 @@ class UserProfile(db.Model):
     idUser = Column(String(255), ForeignKey('user.idUser'), nullable=False)
 
     user = relationship('User', back_populates='profile')
+
 
 if __name__ == '__main__':
     with app.app_context():

@@ -10,33 +10,37 @@ from trade.trade.dao import auth
 
 @login.user_loader
 def load_user(user_id):
-    return  User.query.get(user_id)
+    user = User.query.get(user_id)
+    print(user)
+    return user
 
-
-@app.route("/login", methods=['GET', 'POST'])
-def login_admin():
-    message = "Invalid username or password"
-    if request.method == 'POST':
+@app.route("/admin/login", methods=['GET', 'POST'])
+def login():
+    message = ""
+    if request.method.__eq__("POST"):
         username = request.form['username']
         password = request.form['password']
         user = auth.auth_user(username, password)
+        print(user)
         if user:
-            login_user(user)
+            login_user(user=user)
             return redirect(url_for('index'))
+        message = "Invalid username or password"
     return render_template('login.html', message=message)
 
 
 @app.route('/')
 def index():
+    print(current_user.is_authenticated)
     if current_user.is_authenticated:
-        return "<p>Welcome to Trade</p>"
-    return redirect(url_for('login_admin'))
+        return render_template('index.html' , current_user=current_user)
+    return redirect(url_for('login'))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return "<p>You have been logged out.</p>"
+    return redirect(url_for("login"))
 
 if __name__ == '__main__':
     with app.app_context():
