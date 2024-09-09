@@ -12,7 +12,7 @@ user_name = os.getenv('USER')
 password = os.getenv('PASSWORD')
 host = os.getenv('HOST')
 db = os.getenv('DBNAME')
-port_db = os.getenv('PORT')
+port_db = os.getenv('DB_PORT')
 
 app = Flask(__name__)
 app.secret_key = '*(&*(@*&(*@(^!(*@75876528378932^@%*&^(*@*@&#*'
