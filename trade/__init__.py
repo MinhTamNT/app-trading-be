@@ -12,7 +12,7 @@ user_name = os.getenv('USER')
 password = os.getenv('PASSWORD')
 host = os.getenv('HOST')
 db = os.getenv('DBNAME')
-port = os.getenv('PORT')
+port_db = os.getenv('PORT')
 
 app = Flask(__name__)
 app.secret_key = '*(&*(@*&(*@(^!(*@75876528378932^@%*&^(*@*@&#*'
@@ -22,7 +22,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
         user=user_name,
         password=quote(password),
         host=host,
-        port=port,
+        port=port_db,
         database=db
     )
 )
