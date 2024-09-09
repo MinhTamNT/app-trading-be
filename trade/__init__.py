@@ -22,7 +22,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
         user=user_name,
         password=quote(password),
         host=host,
-        port=port_db,
+        port=3307,
         database=db
     )
 )
