@@ -1,41 +1,117 @@
+import uuid
 from flask import request, jsonify
 from flask_login import login_user
+from flasgger import swag_from
 
 from trade import app, db
 from trade.dao import auth
 from trade.model import UserProfile
 from trade.utils import token
 
-
-@app.route('/login', methods=['POST'])
-def login():
+@app.route('/api/login', methods=['POST'])
+@swag_from({
+    'summary': 'Login a user',
+    'description': 'This endpoint logs in a user using username/password or Google ID.',
+    'parameters': [
+        {
+            'name': 'body',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'username': {'type': 'string'},
+                    'password': {'type': 'string'},
+                    'google_id': {'type': 'string'}
+                },
+                'required': ['username', 'password']
+            }
+        }
+    ],
+    'responses': {
+        '200': {
+            'description': 'Login successful',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'},
+                    'user_id': {'type': 'integer'},
+                    'token': {'type': 'string'}
+                }
+            }
+        },
+        '401': {
+            'description': 'Invalid credentials'
+        }
+    }
+})
+def login_user_guest():
     data = request.json
     username = data.get('username')
     password = data.get('password')
     google_id = data.get('google_id')
 
+    print(f"Received data: username={username}, google_id={google_id}")
+
     user_auth = None
+    user = None
 
     if google_id:
         user_auth = auth.get_user_auth_by_google_id(google_id)
         if user_auth:
             user = user_auth.user
-            login_user(user)
-            new_token = token.create_jwt_token(user)
-            return jsonify({'message': 'Google login successful', 'user_id': user.idUser, 'token': new_token})
     else:
-        user_auth = auth.get_user_auth_by_username(username)
-        if user_auth and user_auth.check_password(password):
-            user = user_auth.user
-            login_user(user)
-            new_token = token.create_jwt_token(user)
-            return jsonify({'message': 'Login successful', 'user_id': user.idUser, 'token': new_token})
+        user_auth = auth.auth_user(username, password)
+        if user_auth:
+            user = user_auth
+
+    if user:
+        login_user(user)
+        new_token = token.create_jwt_token(user)
+        return jsonify({'message': 'Login successful', 'user_id': user.idUser, 'token': new_token})
 
     return jsonify({'message': 'Invalid credentials'}), 401
 
 
-
-@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
+@swag_from({
+    'summary': 'Register a new user',
+    'description': 'This endpoint registers a new user and creates a user profile.',
+    'parameters': [
+        {
+            'name': 'body',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'username': {'type': 'string'},
+                    'first_name': {'type': 'string'},
+                    'last_name': {'type': 'string'},
+                    'email': {'type': 'string'},
+                    'password': {'type': 'string'},
+                    'google_id': {'type': 'string'},
+                    'phone_number': {'type': 'string'},
+                    'need': {'type': 'string'}
+                },
+                'required': ['username', 'first_name', 'last_name', 'email', 'password']
+            }
+        }
+    ],
+    'responses': {
+        '200': {
+            'description': 'User registered successfully',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'},
+                    'user_id': {'type': 'integer'}
+                }
+            }
+        },
+        '400': {
+            'description': 'Username or email already exists'
+        }
+    }
+})
 def register():
     data = request.json
     username = data.get('username')
@@ -45,7 +121,7 @@ def register():
     password = data.get('password')
     google_id = data.get('google_id')
     phone_number = data.get('phone_number')
-    registration_complete = data.get('registration_complete')
+    need = data.get('need')
 
     if auth.get_user_by_username(username):
         return jsonify({'message': 'Username already exists'}), 400
@@ -53,38 +129,60 @@ def register():
     if auth.get_user_by_email(email):
         return jsonify({'message': 'Email already registered'}), 400
 
-    user = auth.create_user(username, email)
-    user_profile = UserProfile(user_id=user.idUser, phone_number=phone_number, registration_complete=registration_complete , first_name=first_name, last_name=last_name)
+    user = auth.create_user(username, password, email)
+    user_profile = UserProfile(idProfile=str(uuid.uuid4()), idUser=user.idUser, phoneNumber=phone_number, need=need, firstName=first_name, lastName=last_name)
     db.session.add(user_profile)
     db.session.commit()
 
-    auth.create_user_auth(user.idUser, google_id=google_id, password=password)
+    auth.create_user_auth(user.idUser, google_id=google_id)
 
     return jsonify({'message': 'User registered successfully', 'user_id': user.idUser})
 
 
-@app.route('/current-user', methods=['GET'])
+@app.route('/api/current-user', methods=['GET'])
+@swag_from({
+    'summary': 'Get the current user information',
+    'description': 'This endpoint retrieves the information of the currently authenticated user.',
+    'responses': {
+        '200': {
+            'description': 'Current user details',
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'user_id': {'type': 'integer'},
+                    'username': {'type': 'string'},
+                    'email': {'type': 'string'},
+                    'first_name': {'type': 'string'},
+                    'last_name': {'type': 'string'},
+                    'phone_number': {'type': 'string'},
+                    'registration_complete': {'type': 'boolean'}
+                }
+            }
+        },
+        '401': {
+            'description': 'Invalid token or missing authorization'
+        },
+        '404': {
+            'description': 'User not found'
+        }
+    }
+})
 def get_current_user():
     auth_header = request.headers.get('Authorization')
 
     if auth_header and auth_header.startswith('Bearer '):
-        jwt_token = auth_header.split(' ')[1]  # Get the actual token part
+        jwt_token = auth_header.split(' ')[1]
 
         try:
-            # Decode the JWT token
             decoded_token = token.decode_token(jwt_token)
-
-            # Get the user_id from the decoded token
             user_id = decoded_token.get('user_id')
 
-            # Query the user info based on user_id
             user = auth.get_user_by_id(user_id)
             user_profile = UserProfile.query.filter_by(user_id=user_id).first()
 
             if not user:
                 return jsonify({'message': 'User not found'}), 404
 
-            # Return the user's information
             user_info = {
                 'user_id': user.idUser,
                 'username': user.username,
@@ -101,7 +199,3 @@ def get_current_user():
 
     else:
         return jsonify({'message': 'Authorization header is missing or invalid'}), 401
-
-# if __name__ == '__main__':
-#     with app.app_context():
-#         app.run(debug=True)

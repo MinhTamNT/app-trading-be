@@ -3,8 +3,10 @@ import hashlib
 
 from sqlalchemy import Column, String, Enum, DateTime, ForeignKey, Text, Integer, Boolean
 from sqlalchemy.orm import relationship
-from . import db, app
+
 from flask_login import UserMixin
+
+from trade import db, app
 
 
 class UserRole(enum.Enum):
@@ -76,8 +78,7 @@ class UserAuth(db.Model):
     idAuth = Column(String(255), primary_key=True)
     userId = Column(String(255), ForeignKey('user.idUser'), nullable=False)
     googleId = Column(String(200), unique=True, nullable=True)
-    phoneNumber = Column(String(20), unique=True, nullable=True)
-    provider = Column(Enum('starand', 'google'), nullable=False)
+    provider = Column(Enum('strand', 'google'), nullable=False ,default="strand")
 
     user = relationship('User', back_populates='auth')
 
@@ -88,31 +89,31 @@ class UserProfile(db.Model):
     firstName = Column(String(150), nullable=True)
     lastName = Column(String(150), nullable=True)
     profileImage = Column(String(250), nullable=True)
-    phoneNumber = Column(Integer, nullable=True)
+    phoneNumber = Column(String(20), nullable=True)
     need = Column(Enum('AUTO_TRADE', 'NOTIFICATION'), nullable=True)
     idUser = Column(String(255), ForeignKey('user.idUser'), nullable=False)
 
     user = relationship('User', back_populates='profile')
 
-
-if __name__ == '__main__':
-    with app.app_context():
-        # db.create_all()
-        # password = hashlib.md5("123".encode("utf-8")).hexdigest()
-        #
-        # # Create an admin user
-        # admin_user = User(
-        #     idUser="e1175186-ead1-418d-92fc-9ba7edaf700b",  # Unique user ID
-        #     username="admin",  # Admin username
-        #     email="admin@example.com",  # Admin email
-        #     password=password,  # Hashed password
-        #     isActive=True,  # Active status
-        #     userRole=UserRole.ADMIN  # Assign ADMIN role
-        # )
-        #
-        # db.session.add(admin_user)
-        #
-        # db.session.commit()
-        #
-        # print(f"Admin user '{admin_user.username}' with role '{admin_user.userRole.name}' created.")
-        print("Database tables created.")
+#
+# if __name__ == '__main__':
+#     with app.app_context():
+#         db.create_all()
+#         password = hashlib.md5("123".encode("utf-8")).hexdigest()
+#
+#         # Create an admin user
+#         admin_user = User(
+#             idUser="e1175186-ead1-418d-92fc-9ba7edaf700b",  # Unique user ID
+#             username="admin",  # Admin username
+#             email="admin@example.com",  # Admin email
+#             password=password,  # Hashed password
+#             isActive=True,  # Active status
+#             userRole=UserRole.ADMIN  # Assign ADMIN role
+#         )
+#
+#         db.session.add(admin_user)
+#
+#         db.session.commit()
+#
+#         print(f"Admin user '{admin_user.username}' with role '{admin_user.userRole.name}' created.")
+#         print("Database tables created.")

@@ -1,22 +1,21 @@
 from urllib import request
 
-from flask import render_template, redirect, url_for , request
+from flask import render_template, redirect, url_for, request, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 
-from . import login
-from .model import *
-from .dao import auth
-
-
+from trade import login, app, db
+from trade.dao import auth
+from trade.model import User, UserProfile
+from trade.utils import token
+import trade.api.stock.stock
+import trade.api.auth.auth
 
 @login.user_loader
 def load_user(user_id):
-    user = User.query.get(user_id)
-    print(user)
-    return user
+    return  User.query.get(user_id)
 
 @app.route("/admin/login", methods=['GET', 'POST'])
-def login():
+def admin_login():
     message = ""
     if request.method.__eq__("POST"):
         username = request.form['username']
@@ -35,20 +34,16 @@ def index():
     print(current_user.is_authenticated)
     if current_user.is_authenticated:
         return render_template('index.html' , current_user=current_user)
-    return redirect(url_for('login'))
+    return redirect(url_for('admin_login'))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("login"))
-
-
-
+    return redirect(url_for("admin_login"))
 
 
 
 if __name__ == '__main__':
     with app.app_context():
-        app.run(debug=True)
-        app.run(host='0.0.0.0', port=5000)
+        app.run(host='0.0.0.0', port=5000 , debug=True)

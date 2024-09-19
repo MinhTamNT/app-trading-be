@@ -1,5 +1,4 @@
 import datetime
-
 import jwt
 
 from trade import app
@@ -14,4 +13,9 @@ def create_jwt_token(user):
     return token
 
 def decode_token(token):
-    return jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+    try:
+        return jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+    except jwt.ExpiredSignatureError:
+        return {'message': 'Token has expired'}
+    except jwt.InvalidTokenError:
+        return {'message': 'Invalid token'}
