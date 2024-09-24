@@ -1,12 +1,14 @@
 from urllib import request
 
-from flask import render_template, redirect, url_for, request, jsonify
+
+from flask import render_template, redirect, url_for, request
 from flask_login import login_user, login_required, logout_user, current_user
 
-from trade import login, app, db
+from trade import login, app
 from trade.dao import auth
-from trade.model import User, UserProfile
-from trade.utils import token
+from trade.model import User
+
+
 import trade.api.stock.stock
 import trade.api.auth.auth
 
@@ -31,9 +33,9 @@ def admin_login():
 
 @app.route('/')
 def index():
-    print(current_user.is_authenticated)
     if current_user.is_authenticated:
-        return render_template('index.html' , current_user=current_user)
+        users = auth.get_all_users()
+        return render_template('index.html' , current_user=current_user,users = users)
     return redirect(url_for('admin_login'))
 
 @app.route('/logout')

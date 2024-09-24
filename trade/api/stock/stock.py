@@ -7,7 +7,7 @@ from trade.dao.stock import create_recommend_stock
 from trade.utils.authorize import authen_required
 
 
-@app.route('/stock/create-stock', methods=['POST'])
+@app.route('/api/stock/create-stock', methods=['POST'])
 @authen_required
 @swag_from({
     'summary': 'Create a stock recommendation',
@@ -29,7 +29,7 @@ from trade.utils.authorize import authen_required
                         'description': 'The type of stock, e.g., buy, sell',
                         'example': 'buy'
                     },
-                    'date': {
+                    '    ': {
                         'type': 'string',
                         'description': 'The date for the stock recommendation in YYYY-MM-DD format',
                         'example': '2024-09-20'

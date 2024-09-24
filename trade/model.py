@@ -98,22 +98,30 @@ class UserProfile(db.Model):
 #
 # if __name__ == '__main__':
 #     with app.app_context():
-#         db.create_all()
-#         password = hashlib.md5("123".encode("utf-8")).hexdigest()
+#         # db.create_all()
+#         for i in range(1, 11):  # Create 10 users
+#             # Generate a random username and email
+#             username = f"user{i}"
+#             email = f"user{i}@example.com"
+#             password = hashlib.sha256("password123".encode("utf-8")).hexdigest()  # Example password
 #
-#         # Create an admin user
-#         admin_user = User(
-#             idUser="e1175186-ead1-418d-92fc-9ba7edaf700b",  # Unique user ID
-#             username="admin",  # Admin username
-#             email="admin@example.com",  # Admin email
-#             password=password,  # Hashed password
-#             isActive=True,  # Active status
-#             userRole=UserRole.ADMIN  # Assign ADMIN role
-#         )
+#             # Determine user role (5 admins and 5 guests)
+#             user_role = UserRole.ADMIN if i <= 5 else UserRole.GUEST
 #
-#         db.session.add(admin_user)
+#             # Create user instance
+#             user = User(
+#                 idUser=str(i),  # Unique user ID
+#                 username=username,
+#                 email=email,
+#                 password=password,
+#                 isActive=True,
+#                 userRole=user_role
+#             )
+#
+#             # Add user to the session
+#             db.session.add(user)
 #
 #         db.session.commit()
 #
-#         print(f"Admin user '{admin_user.username}' with role '{admin_user.userRole.name}' created.")
+#         print("10 users created successfully.")
 #         print("Database tables created.")

@@ -35,6 +35,31 @@ def auth_user(username, password):
     print(f"Authenticating user: {username}, Password hash: {password_hash}")
     return User.query.filter_by(username=username.strip(), password=password_hash).first()
 
+def get_user(user_id):
+    user = get_user_by_id(user_id)
+    if user:
+        print(f"User found: {user.username}")
+    else:
+        print("User not found.")
+    return user
 
+
+def delete_user(user_id):
+    user = get_user_by_id(user_id)
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        print(f"User {user.username} deleted successfully.")
+    else:
+        print("User not found.")
+
+
+def get_all_users():
+    users = User.query.all()
+    if users:
+        print(f"Found {len(users)} users.")
+    else:
+        print("No users found.")
+    return users
 
 
