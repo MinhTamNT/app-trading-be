@@ -1,10 +1,85 @@
 {% extends "layout/base.html" %}
 
-{% block title %}Home - My Application{% endblock %}
+{% block title %}Home - App Trading{% endblock %}
 
 {% block content %}
-<div class="text-center">
-    <h1 class="text-4xl font-bold mb-4">Welcome to My Application</h1>
-    <p class="text-lg">This is the homepage.</p>
+<div class="flex justify-center">
+    <h1 class="text-4xl font-bold mb-4 w-full text-center">Welcome to App Trading</h1>
 </div>
+
+<div class="flex justify-center space-x-5">
+    <div>
+        <canvas id="myBarChart" width="500" height="500"></canvas>
+    </div>
+
+    <div>
+        <canvas id="myLineChart" width="500" height="500"></canvas>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // First chart (Bar chart)
+    const ctxBar = document.getElementById('myBarChart').getContext('2d');
+    const myBarChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'User Data',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Second chart (Line chart)
+    const ctxLine = document.getElementById('myLineChart').getContext('2d');
+    const myLineChart = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Recommended Data',
+                data: [15, 25, 10, 8, 7, 6],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: true,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}

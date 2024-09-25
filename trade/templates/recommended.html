@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+{% block title %}Theo dõi khuyến nghị{% endblock %}
+{% block content %}
+<div class="container mx-auto mt-10 px-4">
+    <h2 class="text-3xl font-extrabold  text-gray-800 mb-8">Theo dõi khuyến nghị</h2>
+
+    <div class="overflow-x-auto shadow-md rounded-lg">
+        <table class="min-w-full table-auto bg-white border border-gray-200 rounded-lg">
+            <thead class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                <tr>
+                    <th class="py-4 px-6 text-left text-sm font-semibold tracking-wide">CP</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold tracking-wide">Ngày KN</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold tracking-wide">Giá KN</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold tracking-wide">Giá HT</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold tracking-wide">Lãi/Lỗ</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <!-- Example row -->
+                <tr class="bg-gray-50 hover:bg-gray-100 transition duration-150">
+                    <td class="py-4 px-6 text-sm font-medium text-gray-800">ABC</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">2024-09-01</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">50,000 VND</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">55,000 VND</td>
+                    <td class="py-4 px-6 text-sm font-semibold text-green-500">+10%</td>
+                </tr>
+                <!-- Additional rows can go here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
