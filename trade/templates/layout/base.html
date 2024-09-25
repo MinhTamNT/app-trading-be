@@ -15,7 +15,7 @@
 
     <header class="bg-white shadow-md">
         <div class="container mx-auto flex justify-between items-center py-4 px-6">
-            <a href="{{ url_for('home') }}">
+            <a href="/">
                 <h1 class="text-3xl font-bold text-blue-600  cursor-pointer">App-Trading</h1>
             </a>
 
@@ -45,14 +45,14 @@
             <h2 class="text-lg font-bold mb-4 border-b pb-2 text-gray-700">Menu</h2>
             <ul class="space-y-2">
                 <li>
-                    <a href="{{ url_for('manager_account') }}" class="flex items-center p-2 text-gray-700 hover:bg-blue-100 rounded-md transition-colors">
+                    <a href="/admin/manager-users" class="flex items-center p-2 text-gray-700 hover:bg-blue-100 rounded-md transition-colors">
                         <i class="fas fa-user-cog mr-2"></i>
                         Quản lý tài khoản
                     </a>
 
                 </li>
                 <li>
-                    <a href="{{ url_for('follow_recommended') }}" class="flex items-center p-2 text-gray-700 hover:bg-blue-100 rounded-md transition-colors">
+                    <a href="/admin/follow-recommended" class="flex items-center p-2 text-gray-700 hover:bg-blue-100 rounded-md transition-colors">
                         <i class="fas fa-chart-line mr-2"></i>
                         Theo dõi khuyến nghị
                     </a>
