@@ -36,10 +36,12 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ user.userRole.name }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ 'Yes' if user.isActive else 'No' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button onclick="openEditModal({{ user.idUser }}, '{{ user.username }}', '{{ user.email }}', '{{ user.userRole.name }}')" class="text-yellow-500 hover:text-yellow-600 mr-2">
+                                <button onclick="openEditModal('{{ user.idUser }}', '{{ user.username }}', '{{ user.email }}', '{{ user.userRole.name }}')"
+                                        class="text-yellow-500 hover:text-yellow-600 mr-2">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button onclick="openDeleteModal({{ user.idUser }})" class="text-red-600 hover:text-red-700">
+                                <button onclick="openDeleteModal('{{ user.idUser }}')"
+                                        class="text-red-600 hover:text-red-700">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </td>
@@ -160,7 +162,22 @@
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
             const userId = document.getElementById('deleteUserId').value;
-            // Delete user logic here
+            // Send POST request to delete the user
+            fetch(`/delete_user/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => {
+                    if (response) {
+                        location.reload();
+                    } else {
+                        alert('Failed to delete user.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
             closeDeleteUserModal();
         });
     </script>
