@@ -77,13 +77,10 @@ def create_stock():
     symbol = data.get('symbol')
     type_ = data.get('type')
     date_str = data.get('date')
-
-    # Validate the input
+    price = data.get('price')
     if not symbol or not type_ or not date_str:
         return jsonify({'status': 'error', 'message': 'Missing required parameters'}), 400
 
-    # Create stock recommendation
-    result = create_recommend_stock(symbol, type_, date_str)
-
-    # Return the result as JSON
+    result = create_recommend_stock(symbol, type_, date_str , price)
+    print(result)
     return jsonify(result)
