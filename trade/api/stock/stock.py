@@ -1,17 +1,13 @@
 from flask import request, jsonify
-from flask_login import login_required
 from flasgger import swag_from
 
 from trade import app
 from trade.dao.stock import create_recommend_stock
-from trade.utils.authorize import authen_required
-
 
 @app.route('/api/stock/create-stock', methods=['POST'])
-@authen_required
 @swag_from({
     'summary': 'Create a stock recommendation',
-    'description': 'This endpoint allows users to create a stock recommendation by providing stock details such as symbol, type, and date.',
+    'description': 'This endpoint allows users to create a stock recommendation by providing stock details such as symbol, type, date, and username as a query parameter.',
     'parameters': [
         {
             'name': 'body',
@@ -29,7 +25,7 @@ from trade.utils.authorize import authen_required
                         'description': 'The type of stock, e.g., buy, sell',
                         'example': 'buy'
                     },
-                    '    ': {
+                    'date': {
                         'type': 'string',
                         'description': 'The date for the stock recommendation in YYYY-MM-DD format',
                         'example': '2024-09-20'
@@ -37,6 +33,14 @@ from trade.utils.authorize import authen_required
                 },
                 'required': ['symbol', 'type', 'date']
             }
+        },
+        {
+            'name': 'username',
+            'in': 'query',
+            'type': 'string',
+            'description': 'The username of the user making the recommendation',
+            'required': True,
+            'example': 'john_doe'
         }
     ],
     'responses': {
@@ -52,7 +56,8 @@ from trade.utils.authorize import authen_required
                         'properties': {
                             'symbol': {'type': 'string'},
                             'type': {'type': 'string'},
-                            'date': {'type': 'string'}
+                            'date': {'type': 'string'},
+                            'username': {'type': 'string'}
                         }
                     }
                 }
@@ -73,14 +78,16 @@ from trade.utils.authorize import authen_required
 def create_stock():
     data = request.get_json()
 
-    # Extract the parameters
+    username = request.args.get('username')
+
     symbol = data.get('symbol')
     type_ = data.get('type')
     date_str = data.get('date')
     price = data.get('price')
-    if not symbol or not type_ or not date_str:
+    current_price = data.get('current_price')
+    if not symbol or not type_ or not date_str or not username:
         return jsonify({'status': 'error', 'message': 'Missing required parameters'}), 400
 
-    result = create_recommend_stock(symbol, type_, date_str , price)
+    result = create_recommend_stock(symbol, type_, date_str, price, username , current_price)
     print(result)
     return jsonify(result)

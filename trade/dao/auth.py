@@ -2,7 +2,7 @@ import hashlib
 
 from ..model import *
 import uuid
-
+from sqlalchemy import extract, func
 def get_user_by_id(user_id):
     return User.query.get(user_id)
 
@@ -55,11 +55,16 @@ def delete_user(user_id):
 
 
 def get_all_users():
-    users = User.query.all()
+    users = User.query.filter(User.userRole != 'ADMIN').all()
+
     if users:
         print(f"Found {len(users)} users.")
     else:
         print("No users found.")
     return users
+
+
+
+
 
 

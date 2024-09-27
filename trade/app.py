@@ -1,12 +1,16 @@
 from urllib import request
 from flask import render_template, redirect, url_for, request
 from flask_login import login_user, login_required, logout_user, current_user
+from sqlalchemy.testing.suite.test_reflection import users
+
 from trade import login, app
 from trade.dao import auth
 from trade.model import User
 import trade.api.stock.stock
 import trade.api.auth.auth
 import trade.controller.user
+
+from trade.dao import statistical
 
 @login.user_loader
 def load_user(user_id):
@@ -36,8 +40,18 @@ def manager_account():
 
 @app.route("/")
 def home():
-    sales_data = [12, 19, 3, 5, 2, 3]
-    return render_template('home.html', sales_data=sales_data)
+    # users = auth.get_all_users()
+    monthly_registrations = statistical.get_user_registrations_by_month()
+    weekly_registrations = statistical.get_user_registrations_by_week()
+    yearly_registrations = statistical.get_user_registrations_by_year()
+
+    # Prepare data for the template
+    return render_template(
+        'home.html',
+        monthly_registrations=monthly_registrations,
+        weekly_registrations=weekly_registrations,
+        yearly_registrations=yearly_registrations
+    )
 
 @app.route("/admin/follow-recommended")
 def follow_recommended():
