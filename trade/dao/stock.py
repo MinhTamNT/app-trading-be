@@ -21,7 +21,7 @@ def create_recommend_stock(symbol, type_, date_str, price, username, current_pri
         profit = calculate_profit(current_price, price)
 
         new_recommendation = Recommendation(
-            idRecommend=idRecommend,
+            id=idRecommend,
             symbol=symbol,
             type=type_,
             lastUpdate=date_str,
@@ -40,16 +40,15 @@ def create_recommend_stock(symbol, type_, date_str, price, username, current_pri
         db.session.rollback()
         return {'status': 'error', 'message': str(e)}
 
-def update_recommend_stock(name_symbol, new_price, date_str, current_price):
+def update_recommend_stock(name_symbol, new_price, date_str , singal_type):
     try:
         recommendation = Recommendation.query.filter_by(symbol=name_symbol).first()
         if not recommendation:
             return {'status': 'error', 'message': 'Recommendation not found'}, 404
-
-        # Update fields
         recommendation.price = new_price
+        recommendation.type = singal_type
         recommendation.lastUpdate = date_str
-        recommendation.profit = calculate_profit(current_price, new_price)
+        recommendation.profit = calculate_profit(new_price ,recommendation.priceRecommend)
 
         db.session.commit()
 

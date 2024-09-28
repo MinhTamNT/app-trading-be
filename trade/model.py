@@ -1,7 +1,7 @@
 import enum
 import hashlib
 
-from sqlalchemy import Column, String, Enum, DateTime, ForeignKey, Text, Integer, Boolean
+from sqlalchemy import Column, String, Enum, DateTime, ForeignKey, Text, Integer, Boolean, Float
 from sqlalchemy.orm import relationship
 
 from flask_login import UserMixin
@@ -16,12 +16,12 @@ class UserRole(enum.Enum):
 
 class Recommendation(db.Model):
     __table_args__ = {'extend_existing': True}
-    idRecommend = Column(String(255), primary_key=True)
+    id = Column(String(255), primary_key=True)
     symbol = Column(String(100), nullable=True)
     type = Column(Enum('Buy', 'Sell', 'Hold'), nullable=True)
-    priceRecommend = Column(Integer, nullable=True)
-    price = Column(Integer, nullable=True)
-    profit = Column(Integer, nullable=True)
+    priceRecommend = Column(Float, nullable=True)
+    price = Column(Float, nullable=True)
+    profit = Column(Float, nullable=True)
     lastUpdate = Column(DateTime, nullable=True)
     notifications = relationship('Notification', back_populates='recommendation')
 
@@ -56,7 +56,7 @@ class Notification(db.Model):
     idNotification = Column(String(255), primary_key=True)
     message = Column(String(500), nullable=True)
     typeNotifications = Column(Enum('APP', 'ZALO'), nullable=True)
-    idRecommend = Column(String(255), ForeignKey('recommendation.idRecommend'), nullable=False)
+    idRecommend = Column(String(255), ForeignKey('recommendation.id'), nullable=False)
     userId = Column(String(255), ForeignKey('user.idUser'), nullable=False)
     createdAt = Column(DateTime, default=db.func.current_timestamp())
 

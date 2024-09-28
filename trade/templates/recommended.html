@@ -1,8 +1,10 @@
 {% extends "layout/base.html" %}
+
 {% block title %}Theo dõi khuyến nghị{% endblock %}
+
 {% block content %}
 <div class="container mx-auto mt-10 px-4">
-    <h2 class="text-3xl font-extrabold  text-gray-800 mb-8">Theo dõi khuyến nghị</h2>
+    <h2 class="text-3xl font-extrabold text-gray-800 mb-8">Theo dõi khuyến nghị</h2>
 
     <div class="overflow-x-auto shadow-md rounded-lg">
         <table class="min-w-full table-auto bg-white border border-gray-200 rounded-lg">
@@ -16,15 +18,25 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-                <!-- Example row -->
+                {% for recommendation in all_recommended %}
                 <tr class="bg-gray-50 hover:bg-gray-100 transition duration-150">
-                    <td class="py-4 px-6 text-sm font-medium text-gray-800">ABC</td>
-                    <td class="py-4 px-6 text-sm text-gray-600">2024-09-01</td>
-                    <td class="py-4 px-6 text-sm text-gray-600">50,000 VND</td>
-                    <td class="py-4 px-6 text-sm text-gray-600">55,000 VND</td>
-                    <td class="py-4 px-6 text-sm font-semibold text-green-500">+10%</td>
+                    <td class="py-4 px-6 text-sm font-medium text-gray-800">{{ recommendation.symbol }}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">{{ recommendation.lastUpdate }}</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">{{ recommendation.priceRecommend }} VND</td>
+                    <td class="py-4 px-6 text-sm text-gray-600">{{ recommendation.price }} VND</td>
+                    <td class="py-4 px-6 text-sm font-semibold {% if recommendation.profit > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                        {% if recommendation.profit > 0 %}
+                            +{{ recommendation.profit }}%
+                        {% else %}
+                            {{ recommendation.profit }}%
+                        {% endif %}
+                    </td>
                 </tr>
-                <!-- Additional rows can go here -->
+                {% else %}
+                <tr>
+                    <td colspan="5" class="py-4 px-6 text-sm text-gray-600 text-center">Không có khuyến nghị nào.</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

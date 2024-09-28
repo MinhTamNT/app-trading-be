@@ -4,11 +4,12 @@ from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.testing.suite.test_reflection import users
 
 from trade import login, app
-from trade.dao import auth
+from trade.dao import auth , recommend
 from trade.model import User
 import trade.api.stock.stock
 import trade.api.auth.auth
 import trade.controller.user
+
 
 from trade.dao import statistical
 
@@ -42,28 +43,24 @@ def manager_account():
 def home():
     # users = auth.get_all_users()
     monthly_registrations = statistical.get_user_registrations_by_month()
-    weekly_registrations = statistical.get_user_registrations_by_week()
-    yearly_registrations = statistical.get_user_registrations_by_year()
 
     # Prepare data for the template
     return render_template(
         'home.html',
         monthly_registrations=monthly_registrations,
-        weekly_registrations=weekly_registrations,
-        yearly_registrations=yearly_registrations
     )
 
 @app.route("/admin/follow-recommended")
 def follow_recommended():
-    return render_template("recommended.html")
+     all_recommended = recommend.get_recommendations_all()
+     print(all_recommended)
+     return render_template("recommended.html" , all_recommended = all_recommended)
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("admin_login"))
-
-
 
 if __name__ == '__main__':
     with app.app_context():
