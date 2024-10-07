@@ -178,19 +178,18 @@ def get_current_user():
             user_id = decoded_token.get('user_id')
 
             user = auth.get_user_by_id(user_id)
-            user_profile = UserProfile.query.filter_by(user_id=user_id).first()
+            user_profile = UserProfile.query.filter_by(idUser=user_id).first()
 
             if not user:
                 return jsonify({'message': 'User not found'}), 404
 
             user_info = {
                 'user_id': user.idUser,
-                'username': user.username,
                 'email': user.email,
-                'first_name': user_profile.first_name,
-                'last_name': user_profile.last_name,
-                'phone_number': user_profile.phone_number,
-                'registration_complete': user_profile.registration_complete
+                'first_name': user_profile.firstName,
+                'last_name': user_profile.lastName,
+                'phone_number': user_profile.phoneNumber,
+                'need': user_profile.need
             }
             return jsonify({'user': user_info}), 200
 

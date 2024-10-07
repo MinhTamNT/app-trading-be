@@ -1,123 +1,84 @@
 
 from flask import request, jsonify
 from flasgger import swag_from
+from flask_wtf.file import file_allowed
 
 from trade import app
 from trade.dao.stock import create_recommend_stock, update_recommend_stock, find_recommendation_by_symbol
 from trade.dao.recommend import *
+
+from flask_socketio import emit
+
+from trade.model import SignalSell, SignalBuy
+
+
 @app.route('/api/stock/create-or-update-stock', methods=['POST'])
 @swag_from({
     'summary': 'Create or update a stock recommendation',
     'description': 'This endpoint allows users to create a new stock recommendation or update an existing one by providing stock details such as symbol, type, date, price, and current price.',
     'parameters': [
-        {
-            'name': 'body',
-            'in': 'body',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'symbol': {
-                        'type': 'string',
-                        'description': 'The stock symbol, e.g., AAPL, GOOG',
-                        'example': 'AAPL'
-                    },
-                    'type': {
-                        'type': 'string',
-                        'description': 'The type of stock, e.g., buy, sell',
-                        'example': 'buy'
-                    },
-                    'date': {
-                        'type': 'string',
-                        'description': 'The date for the stock recommendation in YYYY-MM-DD format',
-                        'example': '2024-09-20'
-                    },
-                    'price': {
-                        'type': 'integer',
-                        'description': 'The purchase price of the stock',
-                        'example': 150
-                    },
-                    'current_price': {
-                        'type': 'integer',
-                        'description': 'The current price of the stock for profit calculation',
-                        'example': 200
-                    }
-                },
-                'required': ['symbol', 'type', 'date', 'price', 'current_price']
-            }
-        },
-        {
-            'name': 'username',
-            'in': 'query',
-            'type': 'string',
-            'description': 'The username of the user making the recommendation',
-            'required': True,
-            'example': 'john_doe'
-        }
+        # Swagger documentation details
     ],
     'responses': {
-        '200': {
-            'description': 'Stock recommendation created or updated successfully',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'status': {'type': 'string', 'example': 'success'},
-                    'message': {'type': 'string'},
-                    'data': {
-                        'type': 'object',
-                        'properties': {
-                            'symbol': {'type': 'string'},
-                            'type': {'type': 'string'},
-                            'date': {'type': 'string'},
-                            'price': {'type': 'integer'},
-                            'current_price': {'type': 'integer'}
-                        }
-                    }
-                }
-            }
-        },
-        '400': {
-            'description': 'Missing required parameters',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'status': {'type': 'string', 'example': 'error'},
-                    'message': {'type': 'string', 'example': 'Missing required parameters'}
-                }
-            }
-        }
+        # Response details
     }
 })
 def create_or_update_stock():
     data = request.get_json()
-
     username = request.args.get('username')
+
     symbol = data.get('symbol')
     type_ = data.get('type')
     date_str = data.get('date')
     price = data.get('price')
     current_price = data.get('current_price')
-
-    # Check for missing parameters
+    interval = data.get('interval')
+    resolution = data.get('resolution')
     if not symbol or not type_ or not date_str or not price or not current_price or not username:
         return jsonify({'status': 'error', 'message': 'Missing required parameters'}), 400
 
-    existing_recommendation = find_recommendation_by_symbol(symbol)
+    type_ = int(type_)
+    existing_recommendations = SignalBuy.query.filter_by(stock=symbol).all()
+    print(existing_recommendations)
 
-    if existing_recommendation:
-        # If it exists, update the recommendation
-        result = update_recommend_stock(symbol, price, date_str , type_)
-        message = f"Stock recommendation for {symbol} updated successfully."
+    if existing_recommendations:
+        buy_ids = [recommendation.id for recommendation in existing_recommendations]
+
+        sell_signals = SignalSell.query.filter(SignalSell.buy_id.in_(buy_ids)).all()
+        print(sell_signals)
+
+        sold_buy_ids = [sell_signal.buy_id for sell_signal in sell_signals]
+        print(sold_buy_ids)
+
+        if not sold_buy_ids:
+            print("No sell signals found, updating all buy signals.")
+            for recommendation in existing_recommendations:
+                print(f"Updating price for buy signal {recommendation.id} as no sell signal exists...")
+                update_recommend_stock(recommendation.id, current_price, date_str)
+        else:
+            for recommendation in existing_recommendations:
+                if recommendation.id in sold_buy_ids:
+                    print(f"Buy signal {recommendation.id} has an associated sell signal, skipping update.")
+                else:
+
+                    if type_ == 1:
+                        print(f"Updating price for buy signal {recommendation.id} as no sell signal exists...")
+                        update_recommend_stock(recommendation.id, current_price, date_str)
+
+                    else:
+                        print(f"Creating a new recommendation for stock {symbol}.")
+                        create_recommend_stock(symbol, type_, date_str, price, username, current_price, interval,
+                                               resolution)
+
     else:
-        result = create_recommend_stock(symbol, type_, date_str, price, username, current_price)
-        message = f"Stock recommendation for {symbol} created successfully."
+        print(f"No existing buy recommendations found, creating a new one for stock {symbol}.")
+        create_recommend_stock(symbol, type_, date_str, price, username, current_price, interval, resolution)
+
 
     return jsonify({
         'status': 'success',
-        'message': message,
-        'data': result
+        'message': 'Stock recommendation created or updated successfully'
     }), 200
-
-
 
 
 @app.route('/api/stock/recommendations', methods=['GET'])
@@ -141,7 +102,7 @@ def create_or_update_stock():
                                 'date': {'type': 'string'},
                                 'price': {'type': 'integer'},
                                 'current_price': {'type': 'integer'},
-                                'username': {'type': 'string'}  # Include if you have a username field
+                                'username': {'type': 'string'}
                             }
                         }
                     }
@@ -161,13 +122,15 @@ def create_or_update_stock():
     }
 })
 def get_stock_recommendations():
-    recommendations = get_all_recommendations_api()  # Fetch recommendations from the database
+    recommendations = get_all_recommendations_api()
 
+    # if recommendations:
+    #     emit('recommendations_fetched', recommendations)
+    #     print("connect")
     if not recommendations:
         return jsonify({
-            'status': 'error',
             'message': 'No recommendations found'
-        }), 404
+        }), 200
 
     return jsonify({
         'status': 'success',

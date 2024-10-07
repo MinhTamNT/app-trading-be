@@ -14,15 +14,51 @@ class UserRole(enum.Enum):
     GUEST = 2
 
 
+class SignalBuy(db.Model):
+    __tablename__ = 'signal_buy'
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(String(255), primary_key=True)
+    stock = Column(String(100), nullable=True)
+    price_recommend = Column(Float, nullable=True)
+    last_price = Column(Float, nullable=True)
+    profit = Column(Float, nullable=True)
+    buy_time = Column(DateTime, nullable=True)
+    interval= Column(Integer, nullable=True)
+    resolution = Column(String(20), nullable=True)
+    last_update = Column(DateTime, nullable=True)
+    signal_sell = relationship("SignalSell", uselist=False, back_populates="signal_buy", cascade="all, delete-orphan")
+
+
+class SignalSell(db.Model):
+    __tablename__ = 'signal_sell'
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(String(255), primary_key=True)
+    stock = Column(String(100), nullable=True)
+    recommend = Column(Float, nullable=True)
+    price = Column(Float, nullable=True)
+    profit = Column(Float, nullable=True)
+    interval = Column(Integer, nullable=True)
+    resolution = Column(String(20), nullable=True)
+    buy_time = Column(DateTime, nullable=True)
+    sell_time = Column(DateTime, nullable=True)
+
+    buy_id = Column(String(255), ForeignKey('signal_buy.id'), nullable=False)
+
+    signal_buy = relationship("SignalBuy", back_populates="signal_sell")
+
 class Recommendation(db.Model):
     __table_args__ = {'extend_existing': True}
     id = Column(String(255), primary_key=True)
     symbol = Column(String(100), nullable=True)
     type = Column(Enum('Buy', 'Sell', 'Hold'), nullable=True)
-    priceRecommend = Column(Float, nullable=True)
+    price_recommend = Column(Float, nullable=True)
     price = Column(Float, nullable=True)
     profit = Column(Float, nullable=True)
-    lastUpdate = Column(DateTime, nullable=True)
+    buy_time =Column(DateTime, nullable=True)
+    sell_time =Column(DateTime, nullable=True)
+    last_update = Column(DateTime, nullable=True)
     notifications = relationship('Notification', back_populates='recommendation')
 
 
@@ -98,32 +134,32 @@ class UserProfile(db.Model):
     user = relationship('User', back_populates='profile')
 
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        # for i in range(1, 11):  # Create 10 users
-        #     # Generate a random username and email
-        #     username = f"user{i}"
-        #     email = f"user{i}@example.com"
-        #     password = hashlib.sha256("password123".encode("utf-8")).hexdigest()  # Example password
-        #
-        #     # Determine user role (5 admins and 5 guests)
-        #     user_role = UserRole.ADMIN if i <= 5 else UserRole.GUEST
-        #
-        #     # Create user instance
-        #     user = User(
-        #         idUser=str(i),  # Unique user ID
-        #         username=username,
-        #         email=email,
-        #         password=password,
-        #         isActive=True,
-        #         userRole=user_role
-        #     )
-        #
-        #     # Add user to the session
-        #     db.session.add(user)
-        #
-        # db.session.commit()
-        #
-        # print("10 users created successfully.")
-        print("Database tables created.")
+# if __name__ == '__main__':
+#     with app.app_context():
+#         db.create_all()
+#         # for i in range(1, 11):  # Create 10 users
+#         #     # Generate a random username and email
+#         #     username = f"user{i}"
+#         #     email = f"user{i}@example.com"
+#         #     password = hashlib.sha256("password123".encode("utf-8")).hexdigest()  # Example password
+#         #
+#         #     # Determine user role (5 admins and 5 guests)
+#         #     user_role = UserRole.ADMIN if i <= 5 else UserRole.GUEST
+#         #
+#         #     # Create user instance
+#         #     user = User(
+#         #         idUser=str(i),  # Unique user ID
+#         #         username=username,
+#         #         email=email,
+#         #         password=password,
+#         #         isActive=True,
+#         #         userRole=user_role
+#         #     )
+#         #
+#         #     # Add user to the session
+#         #     db.session.add(user)
+#         #
+#         # db.session.commit()
+#         #
+#         # print("10 users created successfully.")
+#         print("Database tables created.")

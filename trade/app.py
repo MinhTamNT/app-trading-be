@@ -1,8 +1,7 @@
 from urllib import request
+
 from flask import render_template, redirect, url_for, request
 from flask_login import login_user, login_required, logout_user, current_user
-from sqlalchemy.testing.suite.test_reflection import users
-
 from trade import login, app
 from trade.dao import auth , recommend
 from trade.model import User
@@ -41,14 +40,8 @@ def manager_account():
 
 @app.route("/")
 def home():
-    # users = auth.get_all_users()
     monthly_registrations = statistical.get_user_registrations_by_month()
-
-    # Prepare data for the template
-    return render_template(
-        'home.html',
-        monthly_registrations=monthly_registrations,
-    )
+    return render_template('home.html',monthly_registrations=monthly_registrations)
 
 @app.route("/admin/follow-recommended")
 def follow_recommended():
@@ -64,4 +57,5 @@ def logout():
 
 if __name__ == '__main__':
     with app.app_context():
-        app.run(host='0.0.0.0', port=5000 , debug=True)
+        # socketio.run(app, host='0.0.0.0', port=5000, debug=True
+        app.run(host='0.0.0.0' , port=5000 , debug=True)
